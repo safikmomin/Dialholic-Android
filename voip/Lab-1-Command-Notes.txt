@@ -1,0 +1,24 @@
+ifconfig
+vi /etc/sysconfig/network-scripts/ifcfg-eth0 #(enable ethic interface and save)
+service network restart
+ifconfig
+yum -y update
+shutdown -r now
+cd /usr/src/
+yum -y install wget gcc gcc-c++ libxml2-devel sqlite-devel ncurses-devel nano
+wget http://downloads.asterisk.org/pub/telephony/certified-asterisk/certified-asterisk-11.6-current.tar.gz
+tar zxfv certified-asterisk-11.6-current.tar.gz
+cd certified-asterisk-11.6-cert8/
+./configure
+make
+make install
+make samples
+cp contrib/init.d/rc.redhat.asterisk /etc/init.d/asterisk
+nano /etc/init.d/asterisk #(edit AST_SBIN location to /usr/sbin/)
+ln -s /usr/lib/libasteriskssl.so.1 /usr/lib64/libasteriskssl.so.1 #(use only if you have 64bit or get an exit status 127 error)
+service asterisk start
+chkconfig asterisk on #(only enter this command if asterisk starts without an error)
+nano /etc/selinux/config #(change enforcing to disabled)
+shutdown -r now
+sestatus #(run after reboot to confirm se linux is disabled)
+service asterisk status #(confirm asterisk is running)
